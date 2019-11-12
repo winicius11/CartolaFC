@@ -7,6 +7,11 @@ uses
   System.Net.HTTPClient,
   System.Net.HttpClientComponent,
   System.JSON,
+
+  { Indy }
+  IdHTTP,
+
+  { CartolaFC }
   UCartolaFC.Types;
 
 type
@@ -14,9 +19,9 @@ type
   TCartolaClient = class
   private
 
-    FHTTP: TNetHTTPClient;
+    FHTTP: TIdHTTP;
 
-    procedure HandleOnHTTPComplete(const Sender: TObject; const AResponse: IHTTPResponse);
+    procedure HandleOnHTTPComplete(const Sender: TObject; const AResponse: TIdHTTPResponse);
 
   protected
 
@@ -86,17 +91,29 @@ type
 
   TCartolaClubes = class(TCartolaClient)
   private
+    FClubes: TClubes;
+    FOnReady: TNotifyEvent;
   protected
     function GetURL: string; override;
     procedure ProcessHTTPResponse(const Data: string); override;
   public
+    constructor Create; reintroduce;
+    destructor Destroy; override;
+
+    // Properties
+    property Clubes: TClubes read FClubes write FClubes;
+
+    // Events
+    property OnReady: TNotifyEvent read FOnReady write FOnReady;
+
   end;
 
 implementation
 
 uses
   System.SysUtils,
-  System.Generics.Collections;
+  System.Generics.Collections,
+  System.Threading;
 
 {$REGION 'TCartolaClient'}
 constructor TCartolaClient.Create;
@@ -104,9 +121,10 @@ begin
 
   inherited Create;
 
-  FHTTP                    := TNetHTTPClient.Create(nil);
-  FHTTP.Asynchronous       := FALSE;
-  FHTTP.OnRequestCompleted := HandleOnHTTPComplete;
+  FHTTP := TIdHTTP.Create(nil);
+
+//  FHTTP.Asynchronous       := FALSE;
+//  FHTTP.OnRequestCompleted := HandleOnHTTPComplete;
 
 //  Start;
 
@@ -121,17 +139,31 @@ begin
 
 end;
 
-procedure TCartolaClient.HandleOnHTTPComplete(const Sender: TObject; const AResponse: IHTTPResponse);
+procedure TCartolaClient.HandleOnHTTPComplete(const Sender: TObject; const AResponse: TIdHTTPResponse);
 begin
 
-  if AResponse.StatusCode = 200 then
-    ProcessHTTPResponse(AResponse.ContentAsString);
+  if AResponse.ResponseCode = 200 then
+  begin
+    AResponse.ContentStream.Position := 0;
+    ProcessHTTPResponse(TEncoding.UTF8.GetString(TBytes(TMemoryStream(AResponse.ContentStream).Memory), 0, AResponse.ContentStream.Size));
+  end;
 
 end;
+
 procedure TCartolaClient.Start;
 begin
 
-  HandleOnHTTPComplete(Self, FHTTP.Get(GetURL));
+  TTask.Run(
+  procedure
+  begin
+    var Stream := TMemoryStream.Create;
+    try
+      FHTTP.Get(GetURL, Stream);
+      HandleOnHTTPComplete(Self, FHTTP.Response);
+    finally
+      Stream.Free;
+    end;
+  end);
 
 end;
 
@@ -241,6 +273,24 @@ end;
 {$ENDREGION}
 
 {$REGION 'TCartolaClubes'}
+constructor TCartolaClubes.Create;
+begin
+
+  inherited Create;
+
+  FClubes := TClubes.Create(TRUE);
+
+end;
+
+destructor TCartolaClubes.Destroy;
+begin
+
+  FClubes.Free;
+
+  inherited Destroy;
+
+end;
+
 function TCartolaClubes.GetURL: string;
 begin
 
@@ -249,30 +299,27 @@ begin
 end;
 
 procedure TCartolaClubes.ProcessHTTPResponse(const Data: string);
-var
-  Clubes: TClubes;
 begin
 
-  Clubes := TClubes.Create;
+  var JSON := TJSONObject.ParseJSONValue(Data) AS TJSONObject;
   try
-  
-    var JSON := TJSONObject.ParseJSONValue(Data) AS TJSONObject;
-    try
 
-      for var Item in JSON do
-      begin
-
-        var Clube := TClube.FromJsonString(Item.JsonValue.ToString);
-        
-      end;
-
-    finally
-      JSON.Free;
+    for var Item in JSON do
+    begin
+      var Clube := TClube.FromJsonString(Item.JsonValue.ToString);
+      Clubes.Add(Clube);
     end;
-      
+
   finally
-    Clubes.Free;
+    JSON.Free;
   end;
+
+  TThread.Synchronize(nil,
+  procedure
+  begin
+    if Assigned(FOnReady) then
+      FOnReady(Self);
+  end);
 
 end;
 {$ENDREGION}

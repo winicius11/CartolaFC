@@ -38,7 +38,7 @@ type
 
    public
 
-    class function FromString(const Data: string): TTime;
+    class function Fromstring(const Data: string): TTime;
 
     property Nome: string read FNome write FNome;
     property Nome_Cartola: string read FNome_Cartola write FNome_Cartola;
@@ -52,43 +52,59 @@ type
 
   TEscudos = class
   private
-    F30x30: String;
-    F45x45: String;
-    F60x60: String;
+    F30x30: string;
+    F45x45: string;
+    F60x60: string;
   public
-    property p30x30: String read F30x30 write F30x30;
-    property p45x45: String read F45x45 write F45x45;
-    property p60x60: String read F60x60 write F60x60;
-    function ToJsonString: string;
-    class function FromJsonString(AJsonString: string): TEscudos;
+    property p30x30: string read F30x30 write F30x30;
+    property p45x45: string read F45x45 write F45x45;
+    property p60x60: string read F60x60 write F60x60;
+    function ToJsonstring: string;
+    class function FromJsonstring(AJsonstring: string): TEscudos;
   end;
 
   TClube = class
   private
-    FAbreviacao: String;
+    FAbreviacao: string;
     FEscudos: TEscudos;
     FId: Extended;
-    FNome: String;
-    FNome_fantasia: String;
+    FNome: string;
+    FNome_fantasia: string;
   public
-    property abreviacao: String read FAbreviacao write FAbreviacao;
+    property abreviacao: string read FAbreviacao write FAbreviacao;
     property escudos: TEscudos read FEscudos write FEscudos;
     property id: Extended read FId write FId;
-    property nome: String read FNome write FNome;
-    property nome_fantasia: String read FNome_fantasia write FNome_fantasia;
+    property nome: string read FNome write FNome;
+    property nome_fantasia: string read FNome_fantasia write FNome_fantasia;
     constructor Create;
     destructor Destroy; override;
-    function ToJsonString: string;
-    class function FromJsonString(AJsonString: string): TClube;
+    function ToJsonstring: string;
+    class function FromJsonstring(AJsonstring: string): TClube;
   end;
 
   TClubes = class(TObjectList<TClube>)
+  public type
+
+    TEnumerator = class
+    private
+      FIndex: Integer;
+      FList: TClubes;
+    public
+      constructor Create(const AList: TClubes);
+      function GetCurrent: TClube; inline;
+      function MoveNext: Boolean; inline;
+      property Current: TClube read GetCurrent;
+    end;
+  public
+
+    function GetEnumerator: TEnumerator; inline;
+
   end;
 
 implementation
 
 {$REGION 'TTime'}
-class function TTime.FromString(const Data: string): TTime;
+class function TTime.Fromstring(const Data: string): TTime;
 begin
 
   Result := TTime.Create;
@@ -98,14 +114,14 @@ end;
 {$ENDREGION}
 
 {$REGION 'TEscudos'}
-function TEscudos.ToJsonString: string;
+function TEscudos.ToJsonstring: string;
 begin
-  result := TJson.ObjectToJsonString(self);
+  result := TJson.ObjectToJsonstring(self);
 end;
 
-class function TEscudos.FromJsonString(AJsonString: string): TEscudos;
+class function TEscudos.FromJsonstring(AJsonstring: string): TEscudos;
 begin
-  result := TJson.JsonToObject<TEscudos>(AJsonString)
+  result := TJson.JsonToObject<TEscudos>(AJsonstring)
 end;
 {$ENDREGION}
 
@@ -122,15 +138,42 @@ begin
   inherited;
 end;
 
-function TClube.ToJsonString: string;
+function TClube.ToJsonstring: string;
 begin
-  result := TJson.ObjectToJsonString(self);
+  result := TJson.ObjectToJsonstring(self);
 end;
 
-class function TClube.FromJsonString(AJsonString: string): TClube;
+class function TClube.FromJsonstring(AJsonString: string): TClube;
 begin
   result := TJson.JsonToObject<TClube>(AJsonString)
 end;
 {$ENDREGION}
+
+{ TClubes.TEnumerator }
+
+constructor TClubes.TEnumerator.Create(const AList: TClubes);
+begin
+  inherited Create;
+  FIndex := -1;
+  FList := AList;
+end;
+
+function TClubes.TEnumerator.GetCurrent: TClube;
+begin
+  Result := FList[FIndex];
+end;
+
+function TClubes.TEnumerator.MoveNext: Boolean;
+begin
+  Inc(FIndex);
+  Result := FIndex < FList.Count;
+end;
+
+{ TClubes }
+
+function TClubes.GetEnumerator: TEnumerator;
+begin
+  Result := TEnumerator.Create(Self);
+end;
 
 end.

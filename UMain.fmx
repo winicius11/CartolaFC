@@ -27,4 +27,11 @@ object Form1: TForm1
     Text = 'Button1'
     OnClick = Button1Click
   end
+  object AniIndicator1: TAniIndicator
+    Position.X = 144.000000000000000000
+    Position.Y = 168.000000000000000000
+    Size.Width = 217.000000000000000000
+    Size.Height = 161.000000000000000000
+    Size.PlatformDefault = False
+  end
 end
