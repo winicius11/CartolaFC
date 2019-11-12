@@ -11,18 +11,21 @@ uses
 
   System.JSON,
   UCartolaFC.Client,
-  UCartolaFC.Types;
+  UCartolaFC.Types, FMX.Layouts;
 
 type
   TForm1 = class(TForm)
     ListView1: TListView;
-    Button1: TButton;
-    AniIndicator1: TAniIndicator;
-    procedure Button1Click(Sender: TObject);
+    Layout1: TLayout;
+    procedure ListView1PullRefresh(Sender: TObject);
+    procedure FormCreate(Sender: TObject);
+    procedure ListView1Click(Sender: TObject);
   private
     Clubes: TCartolaClubes;
+    Partidas: TCartolaPartidas;
 
     procedure HandleOnReady(Sender: TObject);
+    procedure HandleOnPartidasReady(Sender: TObject);
     { Private declarations }
   public
     { Public declarations }
@@ -41,62 +44,88 @@ uses
 
 {$R *.fmx}
 
-procedure TForm1.Button1Click(Sender: TObject);
-begin
-
-//  var Response := NetHTTPRequest1.Execute;
-//
-//
-//  Exit;
-
-  Clubes := TCartolaClubes.Create;
-  try
-    Clubes.OnReady := HandleOnReady;
-    Clubes.Start;
-  finally
-//    Clubes.Free;
-  end;
-  Exit;
-
-
-
-end;
 
 procedure TForm1.HandleOnReady(Sender: TObject);
 begin
-
-  AniIndicator1.Enabled := TRUE;
 
   TTask.Run(
   procedure
   begin
 
-    for var Clube in Clubes.Clubes do
-    begin
+//    for var Clube in Clubes.Clubes do
+//    begin
+//
+//      ListView1.BeginUpdate;
+//      try
+//
+//        var Item := ListView1.Items.Add;
+//        Item.Text := Format('%d - %s', [Clube.id, Clube.nome_fantasia]);
+//
+//      finally
+//        ListView1.EndUpdate;
+//      end;
+//
+//    end;
 
-//      ListView1.Visible := FALSE;
-
-      ListView1.BeginUpdate;
-      try
-
-        if Clube.escudos.p60x60.IsEmpty then
-          Continue;
-
-        var Item := ListView1.Items.Add;
-
-        Item.Bitmap := CreateBitmapFromURL(Clube.escudos.p60x60);
-
-      finally
-        ListView1.EndUpdate;
-      end;
-
-      ListView1.Visible := TRUE;
-      AniIndicator1.Visible := FALSE;
-      AniIndicator1.Enabled := FALSE;
-
-    end;
+    Partidas.Start;
 
   end);
+
+end;
+
+procedure TForm1.ListView1Click(Sender: TObject);
+begin
+  {$IFDEF WIN32}
+    ListView1PullRefresh(Self);
+  {$ENDIF}
+end;
+
+procedure TForm1.ListView1PullRefresh(Sender: TObject);
+begin
+
+  Clubes         := TCartolaClubes.Create;
+  Clubes.OnReady := HandleOnReady;
+  Clubes.Start;
+
+  Partidas := TCartolaPartidas.Create;
+  Partidas.OnReady := HandleOnPartidasReady;
+
+end;
+
+procedure TForm1.FormCreate(Sender: TObject);
+begin
+  {$IFDEF WIN32}
+    ListView1PullRefresh(Self);
+  {$ENDIF}
+end;
+
+procedure TForm1.HandleOnPartidasReady(Sender: TObject);
+begin
+
+  for var Partida in Partidas.Partidas do
+  begin
+
+    ListView1.BeginUpdate;
+    try
+
+      var Mandante  := Clubes.Clubes.Locate(Partida.clube_casa_id);
+      var Visitante := Clubes.Clubes.Locate(Partida.clube_visitante_id);
+
+      var Item := ListView1.Items.Add;
+
+      Item.Objects.FindObjectT<TListItemImage>('Image2').Bitmap := CreateBitmapFromURL(Mandante.escudos.p45x45);
+      Item.Objects.FindObjectT<TListItemImage>('Image3').Bitmap := CreateBitmapFromURL(Visitante.escudos.p45x45);
+      Item.Objects.FindObjectT<TListItemText>('Text1').Text     := Format('%s  x  %s', [Mandante.nome_fantasia, Visitante.nome_fantasia]);
+
+    finally
+      ListView1.EndUpdate;
+    end;
+
+    ListView1.Visible := TRUE;
+
+
+
+  end;
 
 end;
 

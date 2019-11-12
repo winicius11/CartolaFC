@@ -6,6 +6,7 @@ uses
   System.Classes,
   System.Net.HTTPClient,
   System.Net.HttpClientComponent,
+  System.Net.URLClient,
   System.JSON,
 
   { Indy }
@@ -18,75 +19,51 @@ type
 
   TCartolaClient = class
   private
-
-    FHTTP: TIdHTTP;
-
-    procedure HandleOnHTTPComplete(const Sender: TObject; const AResponse: TIdHTTPResponse);
-
+//    FHTTP: TIdHTTP;
+    FHTTP: THTTPClient;
+    procedure HandleOnHTTPNeedClientCertificate(const Sender: TObject; const ARequest: TURLRequest; const ACertificateList: TCertificateList; var AnIndex: Integer);
+    procedure HandleOnHTTPValidateServerCertificate(const Sender: TObject; const ARequest: TURLRequest; const Certificate: TCertificate; var Accepted: Boolean);
+    procedure HandleOnHTTPComplete(const Sender: TObject; const AResponse: IHTTPResponse);
+    procedure HandleOnHTTPReceiveData(const Sender: TObject; AContentLength: Int64; AReadCount: Int64; var Abort: Boolean);
   protected
-
     function GetURL: string; virtual; abstract;
-
     procedure ProcessHTTPResponse(const Data: string); virtual; abstract;
-
   public
-
     constructor Create; reintroduce;
     destructor Destroy; override;
-
     procedure Start;
-
   end;
 
   TCartolaRequestStatusMercado = class(TCartolaClient)
   protected
-
     function GetURL: string; override;
-
     procedure ProcessHTTPResponse(const Data: string); override;
-
   end;
 
   TOnBuscaTimeInfo = reference to procedure(Time: TTime);
   TCartolaRequestTimeInfo = class(TCartolaClient)
   private
-
     FSlug: string;
     FRodada: Integer;
     FCallback: TOnBuscaTimeInfo;
-
   protected
-
     function GetURL: string; override;
-
     procedure ProcessHTTPResponse(const Data: string); override;
-
   public
-
     constructor Create(const Slug: string; Rodada: Integer; CallBack: TOnBuscaTimeInfo);
-
   end;
 
   TOnBuscaTimesResult = reference to procedure(Times: TArray<TTime>);
   TCartolaBuscaTimes = class(TCartolaClient)
   private
-
     FCallback: TOnBuscaTimesResult;
-
     FTimeNome: string;
-
   protected
-
     function GetURL: string; override;
-
     procedure ProcessHTTPResponse(const Data: string); override;
-
   public
-
     constructor Create(Time: string; Callback: TOnBuscaTimesResult);
-
     property Time: string read FTimeNome write FTimeNome;
-
   end;
 
   TCartolaClubes = class(TCartolaClient)
@@ -99,13 +76,22 @@ type
   public
     constructor Create; reintroduce;
     destructor Destroy; override;
-
-    // Properties
     property Clubes: TClubes read FClubes write FClubes;
-
-    // Events
     property OnReady: TNotifyEvent read FOnReady write FOnReady;
+  end;
 
+  TCartolaPartidas = class(TCartolaClient)
+  private
+    FPartidas: TPartidas;
+    FOnReady: TNotifyEvent;
+  protected
+    function GetURL: string; override;
+    procedure ProcessHTTPResponse(const Data: string); override;
+  public
+    constructor Create; reintroduce;
+    destructor Destroy; override;
+    property Partidas: TPartidas read FPartidas write FPartidas;
+    property OnReady: TNotifyEvent read FOnReady write FOnReady;
   end;
 
 implementation
@@ -121,7 +107,15 @@ begin
 
   inherited Create;
 
-  FHTTP := TIdHTTP.Create(nil);
+//  FHTTP := TIdHTTP.Create(nil);
+//  FHTTP := TNetHTTPClient.Create(nil);
+  FHTTP := THTTPClient.Create;
+//  FHTTP.Asynchronous := true;
+
+  FHTTP.NeedClientCertificateCallback
+  FHTTP.OnReceiveData               := HandleOnHTTPReceiveData;
+  FHTTP.OnNeedClientCertificate     := HandleOnHTTPNeedClientCertificate;
+  FHTTP.OnValidateServerCertificate := HandleOnHTTPValidateServerCertificate;
 
 //  FHTTP.Asynchronous       := FALSE;
 //  FHTTP.OnRequestCompleted := HandleOnHTTPComplete;
@@ -139,31 +133,50 @@ begin
 
 end;
 
-procedure TCartolaClient.HandleOnHTTPComplete(const Sender: TObject; const AResponse: TIdHTTPResponse);
+procedure TCartolaClient.HandleOnHTTPComplete(const Sender: TObject; const AResponse: IHTTPResponse{TIdHTTPResponse});
 begin
 
-  if AResponse.ResponseCode = 200 then
-  begin
-    AResponse.ContentStream.Position := 0;
-    ProcessHTTPResponse(TEncoding.UTF8.GetString(TBytes(TMemoryStream(AResponse.ContentStream).Memory), 0, AResponse.ContentStream.Size));
-  end;
+//  if AResponse.StatusCode = 200 then
+//  begin
+//    ProcessHTTPResponse(AResponse.ContentAsString)
+    //    AResponse.ContentStream.Position := 0;
+//    ProcessHTTPResponse(TEncoding.UTF8.GetString(TBytes(TMemoryStream(AResponse.ContentStream).Memory), 0, AResponse.ContentStream.Size));
+//  end;
 
+end;
+
+procedure TCartolaClient.HandleOnHTTPNeedClientCertificate(const Sender: TObject; const ARequest: TURLRequest; const ACertificateList: TCertificateList; var AnIndex: Integer);
+begin
+//
+end;
+
+procedure TCartolaClient.HandleOnHTTPReceiveData(const Sender: TObject;
+  AContentLength, AReadCount: Int64; var Abort: Boolean);
+begin
+//
+end;
+
+procedure TCartolaClient.HandleOnHTTPValidateServerCertificate(const Sender: TObject; const ARequest: TURLRequest;
+  const Certificate: TCertificate; var Accepted: Boolean);
+begin
+  Accepted := TRUE;
 end;
 
 procedure TCartolaClient.Start;
 begin
 
-  TTask.Run(
-  procedure
-  begin
-    var Stream := TMemoryStream.Create;
-    try
-      FHTTP.Get(GetURL, Stream);
-      HandleOnHTTPComplete(Self, FHTTP.Response);
-    finally
-      Stream.Free;
-    end;
-  end);
+//  TTask.Run(
+//  procedure
+//  begin
+//    var Stream := TMemoryStream.Create;
+//    try
+//      FHTTP.Get(GetURL, Stream);
+//      HandleOnHTTPComplete(Self, FHTTP.Response);
+      HandleOnHTTPComplete(Self, FHTTP.Get(GetURL));
+//    finally
+//      Stream.Free;
+//    end;
+//  end);
 
 end;
 
@@ -278,7 +291,7 @@ begin
 
   inherited Create;
 
-  FClubes := TClubes.Create(TRUE);
+  FClubes := TClubes.Create;
 
 end;
 
@@ -308,6 +321,65 @@ begin
     begin
       var Clube := TClube.FromJsonString(Item.JsonValue.ToString);
       Clubes.Add(Clube);
+    end;
+
+  finally
+    JSON.Free;
+  end;
+
+  Clubes.Sort;
+
+  TThread.Synchronize(nil,
+  procedure
+  begin
+    if Assigned(FOnReady) then
+      FOnReady(Self);
+  end);
+
+end;
+{$ENDREGION}
+
+{$REGION 'TCartolaPartidas'}
+constructor TCartolaPartidas.Create;
+begin
+
+  inherited Create;
+
+  FPartidas := TPartidas.Create;
+
+end;
+
+destructor TCartolaPartidas.Destroy;
+begin
+
+  FPartidas.Free;
+
+  inherited Destroy;
+
+end;
+
+function TCartolaPartidas.GetURL: string;
+begin
+
+  Result := 'https://api.cartolafc.globo.com/partidas';
+
+end;
+
+procedure TCartolaPartidas.ProcessHTTPResponse(const Data: string);
+var
+  JPartidas: TJSONArray;
+begin
+
+  var JSON := TJSONObject.ParseJSONValue(Data) AS TJSONObject;
+  try
+
+    if not JSON.TryGetValue<TJSONArray>('partidas', JPartidas) then
+      Exit;
+
+    for var Item in JPartidas do
+    begin
+      var Partida := TPartida.FromJsonString(Item.ToString);
+      Partidas.Add(Partida);
     end;
 
   finally

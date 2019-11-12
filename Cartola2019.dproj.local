@@ -7,11 +7,11 @@
     <Transaction>2019/10/06 14:33:50.000.932,=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>2019/11/04 22:40:56.000.907,=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
     <Transaction>2019/11/04 22:49:01.000.339,=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
-    <Transaction>2019/11/04 22:49:27.000.459,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit2.pas=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\CartolaFC.Utils.pas</Transaction>
-    <Transaction>2019/11/04 22:49:31.000.221,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit1.fmx=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UMain.fmx</Transaction>
-    <Transaction>2019/11/04 22:49:31.000.221,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit1.pas=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UMain.pas</Transaction>
-    <Transaction>2019/11/04 22:49:35.000.512,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Project1.dproj=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\Cartola2019.dproj</Transaction>
-    <Transaction>2019/11/04 22:50:12.000.541,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\CartolaFC.Utils.pas=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UCartolaFC.Utils.pas</Transaction>
+    <Transaction>2019/11/04 22:49:27.000.459,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\CartolaFC.Utils.pas=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit2.pas</Transaction>
+    <Transaction>2019/11/04 22:49:31.000.221,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UMain.fmx=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit1.fmx</Transaction>
+    <Transaction>2019/11/04 22:49:31.000.221,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UMain.pas=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Unit1.pas</Transaction>
+    <Transaction>2019/11/04 22:49:35.000.512,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\Cartola2019.dproj=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Project1.dproj</Transaction>
+    <Transaction>2019/11/04 22:50:12.000.541,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UCartolaFC.Utils.pas=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\CartolaFC.Utils.pas</Transaction>
     <Transaction>2019/11/04 23:03:44.000.791,C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\UCartolaFC.Utils.pas=</Transaction>
     <Transaction>2019/11/04 23:03:52.000.921,=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\Library\CartolaAPI\UCartolaFC.Client.pas</Transaction>
     <Transaction>2019/11/04 23:03:52.000.948,=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\Library\CartolaAPI\UCartolaFC.Types.pas</Transaction>
@@ -19,6 +19,6 @@
     <Transaction>2019/11/04 23:03:52.000.936,=C:\Users\Winicius\Documents\Embarcadero\Studio\Projects\Cartola 2019\Library\CartolaAPI\UCartolaFC.pas</Transaction>
   </Transactions>
 	<ActiveMobileDevice>
-		<NoProfile iOSSimulator="iPhone5"/>
+		<NoProfile iOSSimulator="iPhone5" Android=""/>
 	</ActiveMobileDevice>
 </BorlandProject>

@@ -2,36 +2,62 @@ object Form1: TForm1
   Left = 0
   Top = 0
   Caption = 'Form1'
-  ClientHeight = 480
-  ClientWidth = 640
+  ClientHeight = 474
+  ClientWidth = 484
   FormFactor.Width = 320
   FormFactor.Height = 480
   FormFactor.Devices = [Desktop]
+  OnCreate = FormCreate
   DesignerMasterStyle = 0
-  object ListView1: TListView
-    ItemAppearanceClassName = 'TImageListItemAppearance'
-    ItemEditAppearanceClassName = 'TImageListItemDeleteAppearance'
-    HeaderAppearanceClassName = 'TListHeaderObjects'
-    FooterAppearanceClassName = 'TListHeaderObjects'
-    Position.X = 16.000000000000000000
-    Position.Y = 8.000000000000000000
-    Size.Width = 465.000000000000000000
-    Size.Height = 465.000000000000000000
+  object Layout1: TLayout
+    Align = Client
+    Size.Width = 484.000000000000000000
+    Size.Height = 474.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
-  end
-  object Button1: TButton
-    Position.X = 520.000000000000000000
-    Position.Y = 24.000000000000000000
-    TabOrder = 2
-    Text = 'Button1'
-    OnClick = Button1Click
-  end
-  object AniIndicator1: TAniIndicator
-    Position.X = 144.000000000000000000
-    Position.Y = 168.000000000000000000
-    Size.Width = 217.000000000000000000
-    Size.Height = 161.000000000000000000
-    Size.PlatformDefault = False
+    object ListView1: TListView
+      ItemAppearanceClassName = 'TDynamicAppearance'
+      ItemEditAppearanceClassName = 'TDynamicAppearance'
+      HeaderAppearanceClassName = 'TListHeaderObjects'
+      FooterAppearanceClassName = 'TListHeaderObjects'
+      Align = Client
+      Margins.Left = 5.000000000000000000
+      Margins.Top = 5.000000000000000000
+      Margins.Right = 5.000000000000000000
+      Margins.Bottom = 5.000000000000000000
+      Size.Width = 474.000000000000000000
+      Size.Height = 464.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      ItemAppearanceObjects.ItemObjects.ObjectsCollection = <
+        item
+          AppearanceObjectName = 'Text1'
+          AppearanceClassName = 'TTextObjectAppearance'
+        end
+        item
+          AppearanceObjectName = 'Image2'
+          AppearanceClassName = 'TImageObjectAppearance'
+          Appearance.Width = 32.000000000000000000
+          Appearance.Height = 32.000000000000000000
+          Appearance.VertAlign = Center
+        end
+        item
+          AppearanceObjectName = 'Image3'
+          AppearanceClassName = 'TImageObjectAppearance'
+          Appearance.Width = 32.000000000000000000
+          Appearance.Height = 32.000000000000000000
+          Appearance.Align = Trailing
+          Appearance.VertAlign = Center
+        end>
+      ItemAppearanceObjects.ItemEditObjects.ObjectsCollection = <
+        item
+          AppearanceObjectName = 'Text1'
+          AppearanceClassName = 'TTextObjectAppearance'
+        end>
+      OnClick = ListView1Click
+      OnPullRefresh = ListView1PullRefresh
+      PullToRefresh = True
+      PullRefreshWait = True
+    end
   end
 end
