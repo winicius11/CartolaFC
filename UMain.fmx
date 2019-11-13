@@ -60,4 +60,30 @@ object Form1: TForm1
       PullRefreshWait = True
     end
   end
+  object RESTClient1: TRESTClient
+    Accept = '*/*'
+    AcceptCharset = 'utf-8, *;q=0.8'
+    BaseURL = 
+      'https://api.stackexchange.com/2.2/users/511529?site=stackoverflo' +
+      'w'
+    Params = <>
+    SecureProtocols = [SSL2, SSL3, TLS1, TLS11, TLS12]
+    Left = 389
+    Top = 45
+  end
+  object RESTRequest1: TRESTRequest
+    Accept = '*/*'
+    Client = RESTClient1
+    Params = <>
+    Response = RESTResponse1
+    SynchronizedEvents = False
+    Left = 384
+    Top = 104
+  end
+  object RESTResponse1: TRESTResponse
+    ContentType = 'application/json'
+    ContentEncoding = 'gzip'
+    Left = 376
+    Top = 160
+  end
 end

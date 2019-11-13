@@ -11,12 +11,16 @@ uses
 
   System.JSON,
   UCartolaFC.Client,
-  UCartolaFC.Types, FMX.Layouts;
+  UCartolaFC.Types, FMX.Layouts, REST.Types, REST.Client, Data.Bind.Components,
+  Data.Bind.ObjectScope;
 
 type
   TForm1 = class(TForm)
     ListView1: TListView;
     Layout1: TLayout;
+    RESTClient1: TRESTClient;
+    RESTRequest1: TRESTRequest;
+    RESTResponse1: TRESTResponse;
     procedure ListView1PullRefresh(Sender: TObject);
     procedure FormCreate(Sender: TObject);
     procedure ListView1Click(Sender: TObject);

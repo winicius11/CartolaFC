@@ -20,7 +20,7 @@ type
   TCartolaClient = class
   private
 //    FHTTP: TIdHTTP;
-    FHTTP: THTTPClient;
+    FHTTP: TNetHTTPClient;
     procedure HandleOnHTTPNeedClientCertificate(const Sender: TObject; const ARequest: TURLRequest; const ACertificateList: TCertificateList; var AnIndex: Integer);
     procedure HandleOnHTTPValidateServerCertificate(const Sender: TObject; const ARequest: TURLRequest; const Certificate: TCertificate; var Accepted: Boolean);
     procedure HandleOnHTTPComplete(const Sender: TObject; const AResponse: IHTTPResponse);
@@ -108,11 +108,11 @@ begin
   inherited Create;
 
 //  FHTTP := TIdHTTP.Create(nil);
-//  FHTTP := TNetHTTPClient.Create(nil);
-  FHTTP := THTTPClient.Create;
+  FHTTP := TNetHTTPClient.Create(nil);
+//  FHTTP := THTTPClient.Create;
 //  FHTTP.Asynchronous := true;
 
-  FHTTP.NeedClientCertificateCallback
+//  FHTTP.NeedClientCertificateCallback
   FHTTP.OnReceiveData               := HandleOnHTTPReceiveData;
   FHTTP.OnNeedClientCertificate     := HandleOnHTTPNeedClientCertificate;
   FHTTP.OnValidateServerCertificate := HandleOnHTTPValidateServerCertificate;
